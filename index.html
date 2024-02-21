@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Szókereső játék</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+
+#jatekTerulet {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#ujraKezdesGomb {
+  margin-top: 10px;
+}
+
+  </style>
+</head>
+<body>
+  <div id="jatekTerulet">
+    <h1>Üdvözöllek a Szókereső játékban!</h1>
+    <p id="keresendoSzo"></p>
+    <p id="jatekEredmeny"></p>
+    <input type="text" id="betuInput" maxlength="1">
+    <button onclick="betuTippel()">Tippelés</button>
+    <button id="ujraKezdesGomb" onclick="ujraKezd()" style="display: none;">Újrakezdés</button>
+  </div>
+
+  <script>
+    const szavak = [
+      "ALMA",
+      "KÖRTE",
+      "SZILVA",
+      "DINNYE",
+      "BARACK",
+      "MANDULA",
+      "MEGGY",
+      "NARANCS",
+    ];
+
+    let keresendoSzó, rejtettSzó, tippeltBetuk;
+
+    function veletlenSzotValaszt() {
+      return szavak[Math.floor(Math.random() * szavak.length)];
+    }
+
+    function jatekInditas() {
+      keresendoSzó = veletlenSzotValaszt();
+      tippeltBetuk = new Set();
+      rejtettSzó = "_".repeat(keresendoSzó.length);
+
+      document.getElementById("keresendoSzo").textContent =
+        "A keresendő szó: " + rejtettSzó;
+      document.getElementById("jatekEredmeny").textContent = "";
+      document.getElementById("ujraKezdesGomb").style.display = "none";
+    }
+
+    function betuTippel() {
+      const betu = document.getElementById("betuInput").value.toUpperCase();
+      document.getElementById("betuInput").value = "";
+
+      if (!betu.match(/[A-Z]/)) {
+        alert("Kérlek, csak betűket adj meg!");
+        return;
+      }
+
+      if (tippeltBetuk.has(betu)) {
+        alert("Ezt a betűt már tippelted!");
+        return;
+      }
+
+      tippeltBetuk.add(betu);
+
+      let ujRejtettSzó = rejtettSzó;
+
+      if (keresendoSzó.includes(betu)) {
+        ujRejtettSzó = keresendoSzó
+          .split("")
+          .map((ch, index) => (tippeltBetuk.has(ch) ? ch : rejtettSzó[index]))
+          .join("");
+        document.getElementById("keresendoSzo").textContent =
+          "A keresendő szó: " + ujRejtettSzó;
+        document.getElementById("jatekEredmeny").textContent =
+          "Gratulálok, megtaláltál egy betűt!";
+      } else {
+        document.getElementById("jatekEredmeny").textContent =
+          "Sajnos ez a betű nincs benne a szóban.";
+      }
+
+      if (ujRejtettSzó === keresendoSzó) {
+        document.getElementById("jatekEredmeny").textContent =
+          "Gratulálok, nyertél!";
+        document.getElementById("ujraKezdesGomb").style.display = "block";
+      }
+    }
+
+    function ujraKezd() {
+      document.getElementById("ujraKezdesGomb").style.display = "none";
+      jatekInditas();
+    }
+
+    jatekInditas();
+  </script>
+</body>
+</html>
